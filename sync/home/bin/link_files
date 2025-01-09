@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Function to create symbolic links for files from a source directory to a destination directory
+link_files() {
+    local src_dir=$1
+    local dest_dir=$2
+    local pattern=${3:-*} # Default pattern matches all files if not specified
+
+    # Check if source directory exists
+    if [ ! -d "$src_dir" ]; then
+        echo "Source directory $src_dir does not exist."
+        return 1
+    fi
+
+    # Create destination directory if it doesn't exist
+    if [ ! -d "$dest_dir" ]; then
+        echo "Destination directory $dest_dir does not exist. Creating it..."
+        sudo mkdir -p "$dest_dir" || {
+            echo "Failed to create destination directory $dest_dir."
+            return 1
+        }
+    fi
+
+    # Link matching files from the source to the destination
+    echo "Linking files from $src_dir to $dest_dir with pattern '$pattern'..."
+    local files=("$src_dir"/$pattern)
+
+    if [ "${#files[@]}" -eq 0 ]; then
+        echo "No files matching pattern '$pattern' found in $src_dir."
+        return 0
+    fi
+
+    for file in "${files[@]}"; do
+        if [ -f "$file" ]; then
+            local base_file=$(basename "$file")
+            sudo ln -sf "$file" "$dest_dir/$base_file" || {
+                echo "Failed to link $file to $dest_dir/$base_file"
+                return 1
+            }
+            echo "Linked $file to $dest_dir/$base_file"
+        fi
+    done
+}
+
+# Call the function with the provided arguments
+link_files "$@"

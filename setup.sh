@@ -20,14 +20,45 @@ rsync_etc_files() {
 }
 
 # Function to rsync home files
-# rsync_home_files() {
-#     echo "Copying home files..."
-#     rsync -av sync/home/ ~ || {
-#         echo "Failed to copy home files. Exiting."
-#         exit 1
-#     }
-#     echo "home files copied successfully."
-# }
+rsync_home_files() {
+    echo "Copying home files..."
+    rsync -av sync/home/ ~ || {
+        echo "Failed to copy home files. Exiting."
+        exit 1
+    }
+    echo "home files copied successfully."
+}
+
+# Function to check which shell is being used
+check_shell() {
+    case "$SHELL" in
+        */bash)
+            echo "$HOME/.bashrc"
+            ;;
+        */zsh)
+            echo "$HOME/.zshrc"
+            ;;
+        *)
+            echo "$HOME/.dummyrc"
+            ;;
+    esac
+}
+
+# Function to check $HOME/bin is in PATH
+ensure_home_bin_in_path() {
+    if [[ ":$PATH:" == *":$HOME/bin:"* ]]; then
+        echo "$HOME/bin is already in PATH."
+    else
+        echo "Adding $HOME/bin to PATH..."
+        echo "export PATH=\$PATH:\$HOME/bin" >>  "$(check_shell)" || {
+            echo "Failed to add $HOME/bin to PATH. Exiting."
+            exit 1
+        }
+        echo "$HOME/bin added to PATH."
+        echo "Please source $(check_shell) to apply changes."
+        exit 1
+    fi
+}
 
 # Function to remove the journal directory
 remove_journal_dir() {
