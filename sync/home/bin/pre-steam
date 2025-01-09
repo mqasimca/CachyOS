@@ -7,6 +7,7 @@ export PROTON_ENABLE_NGX_UPDATER=1
 export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
 export __GL_SHADER_DISK_CACHE_SIZE=16106127360
 export __GL_SHADER_DISK_CACHE_MAX_SIZE=16106127360
+export PROTON_ENABLE_WAYLAND=1
 
 # Run the program with the provided arguments
 prime-run "$@"
