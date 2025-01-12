@@ -6,7 +6,7 @@ LOGIND_CONF="/etc/systemd/logind.conf"
 HANDLE_LID_SWITCH="HandleLidSwitch=ignore"
 RFKILL_SERVICE="rfkill-unblock@all"
 COPILOT_DIR="$HOME/.vim/pack/github/start/copilot.vim"
-PACMAN_PACKAGES="nodejs npm fwupd cachyos-gaming-meta wl-clipboard appmenu-gtk-module libdbusmenu-glib qt5ct wget unzip realtime-privileges libvoikko hspell nuspell hunspell aspell"
+PACMAN_PACKAGES="neovim nodejs npm fwupd cachyos-gaming-meta wl-clipboard appmenu-gtk-module libdbusmenu-glib qt5ct wget unzip realtime-privileges libvoikko hspell nuspell hunspell aspell"
 AUR_PACKAGES="visual-studio-code-bin ryzenadj"
 
 # Function to rsync etc files
@@ -149,22 +149,21 @@ optimize_nvidia_gpu() {
 
     ensure_installed pacman acpi_call-dkms
 
-    if grep nvidia-smi -L | grep -q 2060; then
-      sudo systemctl disable --now nvidia-powerd.service || {
-          echo "Failed to disable nvidia-powerd.service. Exiting."
-          exit 1
-      }
-      sudo systemctl mask nvidia-powerd.service || {
-          echo "Failed to mask nvidia-powerd.service. Exiting."
-          exit 1
-      }
-      echo "nvidia-powerd.service disabled and masked."
-    fi
-
-    sudo mkinitcpio -P || {
-        echo "Failed to regenerate initramfs. Exiting."
-        exit 1
-    }
+    if nvidia-smi -L | grep -q 2060; then
+	    if systemctl is-enabled nvidia-powerd.service | grep masked; then
+	        echo "nvidia-powerd.service is already masked."
+	    else
+      		sudo systemctl disable --now nvidia-powerd.service || {
+          	echo "Failed to disable nvidia-powerd.service. Exiting."
+          	exit 1
+      		}
+      		sudo systemctl mask nvidia-powerd.service || {
+          	echo "Failed to mask nvidia-powerd.service. Exiting."
+          	exit 1
+      		}
+      		echo "nvidia-powerd.service disabled and masked."
+	    fi 
+   fi
 }
 
 # Function to ensure apcid package is install and enabled
@@ -184,7 +183,7 @@ ensure_installed_acpid() {
 
 # Function to ensure lenovolegionlinux package is installed and enabled
 ensure_installed_lenovolegionlinux() {
-  ensure_installed pacman lenovolegionlinux lenovolegionlinux-dkms
+  ensure_installed pacman lenovolegionlinux
   if systemctl is-enabled --quiet legiond.service; then
       echo "lenovolegionlinux.service is already active."
   else
@@ -206,7 +205,7 @@ pacman_install() {
 # Function to ensure AUR packages are installed
 aur_install() {
   echo "Installing AUR packages..."
-  ensure_installed yay $AUR_PACKAGES
+  ensure_installed paru $AUR_PACKAGES
 }
 
 # Main execution
@@ -214,13 +213,14 @@ main() {
     echo "Starting setup..."
     rsync_etc_files
     rsync_home_files
+    ensure_home_bin_in_path
     remove_journal_dir
     update_logind_conf
     enable_rfkill_service
     install_copilot_plugin
     optimize_nvidia_gpu
-    ensure_installed_acpid
-    ensure_installed_lenovolegionlinux
+#    ensure_installed_acpid
+#    ensure_installed_lenovolegionlinux
     pacman_install
     aur_install
     echo "Setup completed successfully."
