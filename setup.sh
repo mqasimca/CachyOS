@@ -208,6 +208,12 @@ aur_install() {
   ensure_installed paru $AUR_PACKAGES
 }
 
+gsettings_set() {
+    gsettings set org.gnome.mutter check-alive-timeout 60000 || {
+        echo "Failed to set check-alive-timeout. Exiting."
+    }
+}
+
 # Main execution
 main() {
     echo "Starting setup..."
@@ -219,10 +225,11 @@ main() {
     enable_rfkill_service
     install_copilot_plugin
     optimize_nvidia_gpu
-#    ensure_installed_acpid
-#    ensure_installed_lenovolegionlinux
+    ensure_installed_acpid
+    ensure_installed_lenovolegionlinux
     pacman_install
     aur_install
+    gsettings_set
     echo "Setup completed successfully."
 }
 
