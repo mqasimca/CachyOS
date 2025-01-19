@@ -8,6 +8,7 @@ RFKILL_SERVICE="rfkill-unblock@all"
 COPILOT_DIR="$HOME/.vim/pack/github/start/copilot.vim"
 PACMAN_PACKAGES="neovim nodejs npm fwupd cachyos-gaming-meta wl-clipboard appmenu-gtk-module libdbusmenu-glib qt5ct wget unzip realtime-privileges libvoikko hspell nuspell hunspell aspell"
 AUR_PACKAGES="visual-studio-code-bin ryzenadj"
+INSTALL_FONTS="ttf-fantasque-nerd ttf-font-awesome otf-font-awesome awesome-terminal-fonts noto-fonts noto-fonts-emoji ttf-fira-sans ttf-hack cachyos-nord-gtk-theme-git capitaine-cursors"
 
 # Function to rsync etc files
 rsync_etc_files() {
@@ -181,21 +182,6 @@ ensure_installed_acpid() {
   fi
 }
 
-# Function to ensure lenovolegionlinux package is installed and enabled
-ensure_installed_lenovolegionlinux() {
-  ensure_installed pacman lenovolegionlinux
-  if systemctl is-enabled --quiet legiond.service; then
-      echo "lenovolegionlinux.service is already active."
-  else
-      echo "Starting legiond.service..."
-      sudo systemctl enable --now legiond.service legiond-onresume.service legiond-cpuset.timer || {
-          echo "Failed to start lenovolegionlinux.service. Exiting."
-          exit 1
-      }
-      echo "lenovolegionlinux.service started."
-  fi
-}
-
 # Function to ensure pacman packages are installed
 pacman_install() {
   echo "Installing pacman packages..."
@@ -206,6 +192,12 @@ pacman_install() {
 aur_install() {
   echo "Installing AUR packages..."
   ensure_installed paru $AUR_PACKAGES
+}
+
+# Function to ensure fonts are installed
+install_fonts() {
+  echo "Installing fonts..."
+  ensure_installed pacman $INSTALL_FONTS
 }
 
 gsettings_set() {
@@ -226,9 +218,9 @@ main() {
     install_copilot_plugin
     optimize_nvidia_gpu
     ensure_installed_acpid
-    ensure_installed_lenovolegionlinux
     pacman_install
     aur_install
+    install_fonts
     gsettings_set
     echo "Setup completed successfully."
 }
