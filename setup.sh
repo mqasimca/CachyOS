@@ -6,9 +6,8 @@ LOGIND_CONF="/etc/systemd/logind.conf"
 HANDLE_LID_SWITCH="HandleLidSwitch=ignore"
 RFKILL_SERVICE="rfkill-unblock@all"
 COPILOT_DIR="$HOME/.vim/pack/github/start/copilot.vim"
-PACMAN_PACKAGES="neovim nodejs npm fwupd cachyos-gaming-meta wl-clipboard appmenu-gtk-module libdbusmenu-glib qt5ct wget unzip realtime-privileges libvoikko hspell nuspell hunspell aspell"
+PACMAN_PACKAGES="neovim nodejs npm fwupd cachyos-gaming-meta wl-clipboard appmenu-gtk-module libdbusmenu-glib qt5ct wget unzip realtime-privileges libvoikko hspell nuspell hunspell aspell ttf-fantasque-nerd ttf-font-awesome otf-font-awesome awesome-terminal-fonts noto-fonts noto-fonts-emoji ttf-fira-sans ttf-hack cachyos-nord-gtk-theme-git capitaine-cursors cachyos-alacritty-config papirus-icon-theme gnome-shell-extension-dash-to-dock gnome-shell-extension-weather-oclock neofetch"
 AUR_PACKAGES="visual-studio-code-bin ryzenadj"
-INSTALL_FONTS="ttf-fantasque-nerd ttf-font-awesome otf-font-awesome awesome-terminal-fonts noto-fonts noto-fonts-emoji ttf-fira-sans ttf-hack cachyos-nord-gtk-theme-git capitaine-cursors"
 
 # Function to rsync etc files
 rsync_etc_files() {
@@ -194,12 +193,6 @@ aur_install() {
   ensure_installed paru $AUR_PACKAGES
 }
 
-# Function to ensure fonts are installed
-install_fonts() {
-  echo "Installing fonts..."
-  ensure_installed pacman $INSTALL_FONTS
-}
-
 gsettings_set() {
     gsettings set org.gnome.mutter check-alive-timeout 60000 || {
         echo "Failed to set check-alive-timeout. Exiting."
@@ -214,13 +207,9 @@ main() {
     ensure_home_bin_in_path
     remove_journal_dir
     update_logind_conf
-    enable_rfkill_service
     install_copilot_plugin
-    optimize_nvidia_gpu
-    ensure_installed_acpid
     pacman_install
     aur_install
-    install_fonts
     gsettings_set
     echo "Setup completed successfully."
 }

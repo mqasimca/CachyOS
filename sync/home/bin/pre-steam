@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# Run the program with the provided arguments
-prime-run game-performance "$@"

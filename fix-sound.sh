@@ -1,14 +1,24 @@
 #!/bin/bash
 # https://forums.lenovo.com/t5/Ubuntu/Ubuntu-and-legion-pro-7-16IRX8H-audio-issues/m-p/5210709?page=32
+# cat /sys/class/sound/hwC1D0/subsystem_id
+# 16ARX8H
 
+# Check if file exists /etc/modprobe.d/60-hda.conf
+if [ -f /etc/modprobe.d/60-hda.conf ]; then
+    echo "File /etc/modprobe.d/60-hda.conf exists."
+else
+    echo "File /etc/modprobe.d/60-hda.conf does not exist. Creating it..."
+    echo "options snd-hda-intel model=,17aa:38a8" | sudo tee /etc/modprobe.d/60-hda.conf
+fi
 
-echo "options snd-hda-intel model=,17aa:38a8" | sudo tee /etc/modprobe.d/60-hda.conf
-echo "options snd_hda_intel power_save=0" | sudo tee /etc/modprobe.d/audio_disable_powersave.conf
-echo "options snd_hda_intel power_save_controller=N" | sudo tee -a /etc/modprobe.d/audio_disable_powersave.conf
-
-cp -a /usr/share/wireplumber ~/.config/
-# EOF config file ~/.config/wireplumber/wireplumber.conf.d/51-disable-suspension.conf
-cat <<EOF > ~/.config/wireplumber/wireplumber.conf.d/51-disable-suspension.conf
+# Check if file exists ~/.config/wireplumber/wireplumber.conf.d/51-disable-suspension.conf
+if [ -f ~/.config/wireplumber/wireplumber.conf.d/51-disable-suspension.conf ]; then
+    echo "File ~/.config/wireplumber/wireplumber.conf.d/51-disable-suspension.conf exists."
+else
+    echo "File ~/.config/wireplumber/wireplumber.conf.d/51-disable-suspension.conf does not exist. Creating it..."
+    cp -a /usr/share/wireplumber ~/.config/
+    # EOF config file ~/.config/wireplumber/wireplumber.conf.d/51-disable-suspension.conf
+    cat <<EOF > ~/.config/wireplumber/wireplumber.conf.d/51-disable-suspension.conf
 monitor.alsa.rules = [
   {
     matches = [
@@ -49,3 +59,6 @@ monitor.bluez.rules = [
   }
 ]
 EOF
+fi
+
+sudo mkinitcpio -P 
