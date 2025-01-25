@@ -6,7 +6,7 @@ LOGIND_CONF="/etc/systemd/logind.conf"
 HANDLE_LID_SWITCH="HandleLidSwitch=ignore"
 RFKILL_SERVICE="rfkill-unblock@all"
 COPILOT_DIR="$HOME/.vim/pack/github/start/copilot.vim"
-PACMAN_PACKAGES="neovim nodejs npm fwupd cachyos-gaming-meta wl-clipboard appmenu-gtk-module libdbusmenu-glib qt5ct wget unzip realtime-privileges libvoikko hspell nuspell hunspell aspell ttf-fantasque-nerd ttf-font-awesome otf-font-awesome awesome-terminal-fonts noto-fonts noto-fonts-emoji ttf-fira-sans ttf-hack cachyos-nord-gtk-theme-git capitaine-cursors cachyos-alacritty-config papirus-icon-theme gnome-shell-extension-dash-to-dock gnome-shell-extension-weather-oclock neofetch"
+PACMAN_PACKAGES="neovim nodejs npm fwupd cachyos-gaming-meta wl-clipboard appmenu-gtk-module libdbusmenu-glib qt5ct wget unzip realtime-privileges libvoikko hspell nuspell hunspell aspell ttf-fantasque-nerd ttf-font-awesome otf-font-awesome awesome-terminal-fonts noto-fonts noto-fonts-emoji ttf-fira-sans ttf-hack cachyos-nord-gtk-theme-git capitaine-cursors cachyos-alacritty-config papirus-icon-theme gnome-shell-extension-dash-to-dock gnome-shell-extension-weather-oclock neofetch bottles"
 AUR_PACKAGES="visual-studio-code-bin ryzenadj"
 
 # Function to rsync etc files
@@ -45,7 +45,7 @@ check_shell() {
 }
 
 # Function to check $HOME/bin is in PATH
-ensure_home_bin_in_path() {
+home_bin_in_path() {
     if [[ ":$PATH:" == *":$HOME/bin:"* ]]; then
         echo "$HOME/bin is already in PATH."
     else
@@ -147,7 +147,7 @@ optimize_nvidia_gpu() {
         echo "nvidia-persistenced.service started."
     fi 
 
-    ensure_installed pacman acpi_call-dkms
+    sudo pacman -S --needed acpi_call-dkms
 
     if nvidia-smi -L | grep -q 2060; then
 	    if systemctl is-enabled nvidia-powerd.service | grep masked; then
@@ -167,8 +167,8 @@ optimize_nvidia_gpu() {
 }
 
 # Function to ensure apcid package is install and enabled
-ensure_installed_acpid() {
-  ensure_installed pacman acpid
+pacman_installed_acpid() {
+  sudo pacman -S --needed acpid
   if systemctl is-active --quiet acpid.service; then
       echo "acpid.service is already active."
   else
@@ -184,13 +184,29 @@ ensure_installed_acpid() {
 # Function to ensure pacman packages are installed
 pacman_install() {
   echo "Installing pacman packages..."
-  ensure_installed pacman $PACMAN_PACKAGES
+  sudo pacman -S --needed $PACMAN_PACKAGES
 }
 
 # Function to ensure AUR packages are installed
 aur_install() {
   echo "Installing AUR packages..."
-  ensure_installed paru $AUR_PACKAGES
+  paru -S --needed $AUR_PACKAGES
+}
+
+# Function to ensure KVM is install
+kvm() {
+  echo "Installing KVM"
+  sudo pacman -S --needed qemu-full qemu-img libvirt virt-install virt-manager virt-viewer edk2-ovmf dnsmasq swtpm guestfs-tools libosinfo tuned
+  wget https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.240-1/virtio-win-0.1.240.iso -P ~/Downloads
+  for drv in qemu interface network nodedev nwfilter secret storage; do
+    sudo systemctl enable virt${drv}d.service;
+    sudo systemctl enable virt${drv}d{,-ro,-admin}.socket;
+  done
+  sudo virsh net-start default
+  sudo virsh net-autostart default
+  echo "export LIBVIRT_DEFAULT_URI='qemu:///system'" >> "$(check_shell)"
+  sudo ufw allow in on virbr0
+  sudo ufw allow out on virbr0
 }
 
 gsettings_set() {
@@ -204,7 +220,7 @@ main() {
     echo "Starting setup..."
     rsync_etc_files
     rsync_home_files
-    ensure_home_bin_in_path
+    home_bin_in_path
     remove_journal_dir
     update_logind_conf
     install_copilot_plugin

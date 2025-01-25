@@ -1,0 +1,19 @@
+#!/bin/bash
+
+BATTERY_FILE="/sys/class/power_supply/BAT0/capacity"
+CONSERVATION_FILE="/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode"
+
+while true; do
+    BATTERY=$(cat "$BATTERY_FILE")
+    CONSERVATION=$(cat "$CONSERVATION_FILE")
+
+    if [ "$BATTERY" -gt 90 ] && [ "$CONSERVATION" -eq 0 ]; then
+        echo 1 | sudo tee "$CONSERVATION_FILE"
+        echo "Conservation mode enabled"
+    elif [ "$BATTERY" -le 90 ] && [ "$CONSERVATION" -eq 1 ]; then
+        echo 0 | sudo tee "$CONSERVATION_FILE"
+        echo "Conservation mode disabled"
+    fi
+
+    sleep 15 # Check every minute
+done
