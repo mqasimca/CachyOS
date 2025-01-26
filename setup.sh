@@ -196,7 +196,7 @@ aur_install() {
 # Function to ensure KVM is install
 kvm() {
   echo "Installing KVM"
-  sudo pacman -S --needed qemu-full qemu-img libvirt virt-install virt-manager virt-viewer edk2-ovmf dnsmasq swtpm guestfs-tools libosinfo tuned
+  sudo pacman -S --needed qemu-full qemu-img libvirt virt-install virt-manager virt-viewer edk2-ovmf dnsmasq swtpm guestfs-tools libosinfo tuned spice spice-vdagent qemu-guest-agent
   wget https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.240-1/virtio-win-0.1.240.iso -P ~/Downloads
   for drv in qemu interface network nodedev nwfilter secret storage; do
     sudo systemctl enable virt${drv}d.service;
