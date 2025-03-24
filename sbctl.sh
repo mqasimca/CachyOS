@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Check if sbctl is installed
-ensure_installed pacman sbctl
+sudo pacman -S sbctl --needed --noconfirm sbctl
 
 # Check if secureboot is enabled
 if sbctl status | grep -q "Secure Boot:        ✓ Enabled"
