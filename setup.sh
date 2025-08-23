@@ -7,7 +7,7 @@ HANDLE_LID_SWITCH="HandleLidSwitch=ignore"
 RFKILL_SERVICE="rfkill-unblock@all"
 COPILOT_DIR="$HOME/.vim/pack/github/start/copilot.vim"
 PACMAN_PACKAGES="neovim nodejs npm fwupd cachyos-gaming-meta appmenu-gtk-module libdbusmenu-glib qt5ct wget unzip realtime-privileges libvoikko hspell nuspell hunspell aspell ttf-fantasque-nerd ttf-font-awesome otf-font-awesome awesome-terminal-fonts noto-fonts noto-fonts-emoji ttf-fira-sans ttf-hack cachyos-nord-gtk-theme-git capitaine-cursors cachyos-alacritty-config papirus-icon-theme gnome-shell-extension-dash-to-dock gnome-shell-extension-weather-oclock neofetch"
-AUR_PACKAGES="visual-studio-code-bin"
+AUR_PACKAGES="visual-studio-code-bin ryzenadj-git ryzen_smu-dkms-git"
 
 # Function to rsync etc files
 rsync_etc_files() {
