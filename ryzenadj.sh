@@ -8,11 +8,13 @@ if [[ -z "$ryzenadj_path" ]]; then
     exit 1
 fi
 
+default_tctl="--tctl-temp=93"
+
 # Create script to set tctl-temp
 sudo tee /usr/local/bin/ryzenadj-temp.sh > /dev/null <<EOF
 #!/usr/bin/env bash
 set -euo pipefail
-${ryzenadj_path} --tctl-temp=93
+${ryzenadj_path} ${default_tctl}
 EOF
 sudo chmod 755 /usr/local/bin/ryzenadj-temp.sh
 
@@ -20,7 +22,7 @@ sudo chmod 755 /usr/local/bin/ryzenadj-temp.sh
 sudo tee /usr/local/bin/ryzenadj-ac-perf.sh > /dev/null <<EOF
 #!/usr/bin/env bash
 set -euo pipefail
-${ryzenadj_path} --max-performance
+${ryzenadj_path} --max-performance ${default_tctl}
 EOF
 sudo chmod 755 /usr/local/bin/ryzenadj-ac-perf.sh
 
@@ -28,7 +30,7 @@ sudo chmod 755 /usr/local/bin/ryzenadj-ac-perf.sh
 sudo tee /usr/local/bin/ryzenadj-bat-save.sh > /dev/null <<EOF
 #!/usr/bin/env bash
 set -euo pipefail
-${ryzenadj_path} --power-saving
+${ryzenadj_path} --power-saving ${default_tctl}
 EOF
 sudo chmod 755 /usr/local/bin/ryzenadj-bat-save.sh
 
