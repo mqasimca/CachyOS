@@ -7,10 +7,10 @@ while true; do
     BATTERY=$(cat "$BATTERY_FILE")
     CONSERVATION=$(cat "$CONSERVATION_FILE")
 
-    if [ "$BATTERY" -gt 90 ] && [ "$CONSERVATION" -eq 0 ]; then
+    if [ "$BATTERY" -gt 83 ] && [ "$CONSERVATION" -eq 0 ]; then
         echo 1 | sudo tee "$CONSERVATION_FILE"
         echo "Conservation mode enabled"
-    elif [ "$BATTERY" -le 90 ] && [ "$CONSERVATION" -eq 1 ]; then
+    elif [ "$BATTERY" -le 83 ] && [ "$CONSERVATION" -eq 1 ]; then
         echo 0 | sudo tee "$CONSERVATION_FILE"
         echo "Conservation mode disabled"
     fi
