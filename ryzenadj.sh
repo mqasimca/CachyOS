@@ -10,14 +10,6 @@ fi
 
 default_tctl="--tctl-temp=93"
 
-# Create script to set tctl-temp
-sudo tee /usr/local/bin/ryzenadj-temp.sh > /dev/null <<EOF
-#!/usr/bin/env bash
-set -euo pipefail
-${ryzenadj_path} ${default_tctl}
-EOF
-sudo chmod 755 /usr/local/bin/ryzenadj-temp.sh
-
 # Create script for max performance profile (AC)
 sudo tee /usr/local/bin/ryzenadj-ac-perf.sh > /dev/null <<EOF
 #!/usr/bin/env bash
@@ -33,20 +25,6 @@ set -euo pipefail
 ${ryzenadj_path} --power-saving ${default_tctl}
 EOF
 sudo chmod 755 /usr/local/bin/ryzenadj-bat-save.sh
-
-# Create systemd service to set tctl-temp at boot
-sudo tee /etc/systemd/system/ryzenadj-temp.service > /dev/null <<EOF
-[Unit]
-Description=Set RyzenAdj tctl-temp at boot
-After=multi-user.target
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/ryzenadj-temp.sh
-
-[Install]
-WantedBy=multi-user.target
-EOF
 
 # Create systemd service for max performance profile (AC)
 sudo tee /etc/systemd/system/ryzenadj-ac-perf.service > /dev/null <<EOF
@@ -78,9 +56,6 @@ EOF
 
 # Reload systemd to recognize new/changed services
 sudo systemctl daemon-reload
-# Enable and start the tctl-temp service at boot
-sudo systemctl enable ryzenadj-temp.service
-sudo systemctl start ryzenadj-temp.service
 
 # Create udev rule to trigger AC performance profile when AC is plugged in
 sudo tee /etc/udev/rules.d/91-ryzenadj-ac.rules >/dev/null <<'EOF'
