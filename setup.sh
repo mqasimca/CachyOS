@@ -213,6 +213,9 @@ gsettings_set() {
     gsettings set org.gnome.mutter check-alive-timeout 60000 || {
         echo "Failed to set check-alive-timeout. Exiting."
     }
+    gsettings set org.gnome.desktop.screensaver lock-enabled false || {
+        echo "Failed to disable screensaver lock. Exiting."
+    }
 }
 
 # Main execution
